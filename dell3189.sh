@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 
 TOOLKIT_NAME="ReTech Dell 3189 Firmware Toolkit"
 DEVICE_NAME="Dell Chromebook 11 3189"
