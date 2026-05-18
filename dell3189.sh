@@ -10,7 +10,7 @@ ROM_NAME="dell3189.rom"
 ROM_VERSION="ReTech-2603.1"
 ROM_SHA256="56b2a744aefec2112b513ff75cef223137692eb3981de053c1636341a348db06"
 ROM_SIZE="8388608"
-RELEASE_BASE_URL="${CFT_RELEASE_BASE_URL:-https://github.com/uaskpro/chromebook-firmware-toolkit/releases/download}"
+RELEASE_BASE_URL="${CFT_RELEASE_BASE_URL:-https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main}"
 SCRIPT_URL="${CFT_SCRIPT_URL:-https://s4d.uk/dell3189.sh}"
 FLASHROM_PROGRAMMER="${CFT_FLASHROM_PROGRAMMER:-internal:boardmismatch=force}"
 AUTO_INSTALL="${CFT_AUTO_INSTALL:-1}"
@@ -413,8 +413,12 @@ json_get() {
 }
 
 default_manifest_url() {
-  local tag="dell3189-$CHANNEL"
-  printf '%s/%s/manifest.json' "$RELEASE_BASE_URL" "$tag"
+  if [[ "$RELEASE_BASE_URL" == *raw.githubusercontent.com* ]]; then
+    printf '%s/manifest.json' "$RELEASE_BASE_URL"
+  else
+    local tag="dell3189-$CHANNEL"
+    printf '%s/%s/manifest.json' "$RELEASE_BASE_URL" "$tag"
+  fi
 }
 
 load_manifest() {
@@ -474,7 +478,13 @@ EOF
   MANIFEST_VERSION="${MANIFEST_VERSION:-$ROM_VERSION}"
   MANIFEST_SHA256="${MANIFEST_SHA256:-$ROM_SHA256}"
   MANIFEST_SIZE="${MANIFEST_SIZE:-$ROM_SIZE}"
-  MANIFEST_ROM_URL="${MANIFEST_ROM_URL:-$RELEASE_BASE_URL/dell3189-$CHANNEL/$ROM_NAME}"
+  if [[ -z "$MANIFEST_ROM_URL" ]]; then
+    if [[ "$RELEASE_BASE_URL" == *raw.githubusercontent.com* ]]; then
+      MANIFEST_ROM_URL="$RELEASE_BASE_URL/$ROM_NAME"
+    else
+      MANIFEST_ROM_URL="$RELEASE_BASE_URL/dell3189-$CHANNEL/$ROM_NAME"
+    fi
+  fi
 }
 
 verify_device() {
