@@ -454,7 +454,7 @@ load_manifest() {
   "version": "$ROM_VERSION",
   "channel": "$CHANNEL",
   "rom_name": "$ROM_NAME",
-  "rom_url": "$RELEASE_BASE_URL/dell3189-$CHANNEL/$ROM_NAME",
+  "rom_url": "$RELEASE_BASE_URL/$ROM_NAME",
   "sha256": "$ROM_SHA256",
   "size": $ROM_SIZE
 }
