@@ -277,6 +277,10 @@ try_copy_or_download() {
   fi
 }
 
+is_chromeos() {
+  [[ -r /etc/lsb-release ]] && grep -qE '^CHROMEOS_RELEASE_' /etc/lsb-release
+}
+
 install_missing_deps() {
   local missing=("$@")
   local unique=()
@@ -292,6 +296,10 @@ install_missing_deps() {
       seen+="$package "
     fi
   done
+
+  if is_chromeos; then
+    fail "Missing required utilities on ChromeOS: ${unique[*]}. Run from the ChromeOS dev shell/VT2 environment, not from a container."
+  fi
 
   if command -v apt-get >/dev/null 2>&1; then
     say "${YELLOW}Installing missing dependencies:${RESET} ${unique[*]}"
