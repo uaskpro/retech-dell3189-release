@@ -12,7 +12,7 @@ and source materials needed to install and reproduce the Dell Chromebook 11
 Use the short link when configured:
 
 ```sh
-curl -fsSLO https://s4d.uk/dell3189.sh
+curl -fsSL -o dell3189.sh https://s4d.uk/dell3189
 sudo bash dell3189.sh
 ```
 

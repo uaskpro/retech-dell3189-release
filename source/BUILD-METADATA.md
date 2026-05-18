@@ -27,5 +27,5 @@ https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.
 Recommended short link:
 
 ```text
-https://s4d.uk/dell3189.sh -> https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.sh
+https://s4d.uk/dell3189 -> https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.sh
 ```
