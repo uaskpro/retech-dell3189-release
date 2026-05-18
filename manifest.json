@@ -1,0 +1,14 @@
+{
+  "device": "Dell Chromebook 11 3189",
+  "board": "KEFKA",
+  "version": "ReTech-2603.1",
+  "channel": "stable",
+  "rom_name": "dell3189.rom",
+  "rom_url": "https://github.com/uaskpro/chromebook-firmware-toolkit/releases/download/dell3189-stable/dell3189.rom",
+  "mirror_url_1": "https://s4d.uk/stable/dell3189.rom",
+  "mirror_url_2": "https://s4d.uk/latest/dell3189.rom",
+  "sha256": "56b2a744aefec2112b513ff75cef223137692eb3981de053c1636341a348db06",
+  "size": 8388608,
+  "upstream": "MrChromebox/coreboot MrChromebox-2603 f8244f2508d486d833eb8dee5c0b1d777cf37d39",
+  "build_date": "2026-05-17"
+}
