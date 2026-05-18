@@ -593,10 +593,20 @@ show_info() {
 }
 
 preflight_flashrom() {
+  local output
+  output="/tmp/retech-flashrom-preflight.$$"
+
   say "${BLUE}Checking flashrom access...${RESET}"
   command -v flashrom >/dev/null 2>&1 || fail "flashrom is not installed or not in PATH."
-  flashrom -p "$FLASHROM_PROGRAMMER" --flash-name 2>&1 | tee -a "$LOG_FILE" || \
+  if ! flashrom -p "$FLASHROM_PROGRAMMER" --flash-name 2>&1 | tee "$output" | tee -a "$LOG_FILE"; then
+    if grep -qiE '/dev/mem mmap failed|Could not map flash chip|Operation not permitted' "$output"; then
+      rm -f "$output"
+      fail "Linux blocked SPI flash access through /dev/mem. On Debian, reboot once with kernel parameter 'iomem=relaxed', or run this installer from the ChromeOS developer shell/VT2 environment."
+    fi
+    rm -f "$output"
     fail "flashrom cannot access the SPI flash with programmer '$FLASHROM_PROGRAMMER'."
+  fi
+  rm -f "$output"
 
   if flashrom -p "$FLASHROM_PROGRAMMER" --wp-status >/tmp/retech-wp-status.$$ 2>&1; then
     log "flashrom write-protect status:"
