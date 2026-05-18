@@ -2,7 +2,7 @@
 
 - Release repo target: `uaskpro/retech-dell3189-release`
 - Release channel: `stable`
-- Release tag suggestion: `dell3189-stable`
+- Release tag: `v1.0.0`
 - Device: Dell Chromebook 11 3189
 - Board: KEFKA
 - Firmware version: ReTech-2603.1
@@ -29,3 +29,15 @@ Recommended short link:
 ```text
 https://s4d.uk/dell3189 -> https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.sh
 ```
+
+## Validated Install Command
+
+```sh
+curl -fsSL -o dell3189.sh https://s4d.uk/dell3189
+sudo bash dell3189.sh
+```
+
+Primary validated environment: ChromeOS developer mode shell / VT2.
+
+Advanced Linux environments may require kernel parameter `iomem=relaxed` for
+SPI access through `flashrom`.

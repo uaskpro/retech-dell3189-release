@@ -50,3 +50,22 @@ prepares the EDK2 splash asset, builds KEFKA, and writes the output ROM.
 
 The installer flashes only the firmware ROM. It does not wipe or modify the
 internal eMMC storage.
+
+## Release Validation
+
+v1.0.0 was validated on physical Dell Chromebook 11 3189 / KEFKA hardware:
+
+- Installer downloaded through the short link
+- ROM downloaded and checksum verified
+- Firmware backup created
+- ReTech ROM flashed
+- ReTech splash displayed on boot
+
+## Public Artifact URLs
+
+```text
+https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.sh
+https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.rom
+https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/manifest.json
+https://raw.githubusercontent.com/uaskpro/retech-dell3189-release/main/dell3189.rom.sha256
+```
