@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+STANDARD_COMMAND_DIRS="/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin"
 
 TOOLKIT_NAME="ReTech Dell 3189 Firmware Toolkit"
 DEVICE_NAME="Dell Chromebook 11 3189"
@@ -282,6 +283,38 @@ is_chromeos() {
   [[ -r /etc/lsb-release ]] && grep -qE '^CHROMEOS_RELEASE_' /etc/lsb-release
 }
 
+add_path_dir() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 1
+  case ":$PATH:" in
+    *":$dir:"*) ;;
+    *) export PATH="$dir:$PATH" ;;
+  esac
+}
+
+refresh_command_path() {
+  local dir
+  for dir in $STANDARD_COMMAND_DIRS; do
+    add_path_dir "$dir" || true
+  done
+}
+
+resolve_command() {
+  local command="$1"
+  local dir
+
+  command -v "$command" >/dev/null 2>&1 && return 0
+
+  for dir in $STANDARD_COMMAND_DIRS; do
+    if [[ -x "$dir/$command" ]]; then
+      add_path_dir "$dir" || true
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 install_missing_deps() {
   local missing=("$@")
   local unique=()
@@ -306,6 +339,7 @@ install_missing_deps() {
     say "${YELLOW}Installing missing dependencies:${RESET} ${unique[*]}"
     apt-get update 2>&1 | tee -a "$LOG_FILE"
     apt-get install -y "${unique[@]}" 2>&1 | tee -a "$LOG_FILE"
+    refresh_command_path
     return 0
   fi
 
@@ -316,8 +350,10 @@ require_commands() {
   local missing=()
   local command package
 
+  refresh_command_path
+
   for command in flashrom sha256sum awk sed grep tr date tee mkdir wc cp; do
-    if ! command -v "$command" >/dev/null 2>&1; then
+    if ! resolve_command "$command"; then
       case "$command" in
         sha256sum|tr|date|tee|mkdir|wc|cp) package="coreutils" ;;
         awk) package="gawk" ;;
@@ -334,10 +370,11 @@ require_commands() {
   fi
 
   install_missing_deps "${missing[@]}"
+  refresh_command_path
 
   missing=()
   for command in flashrom sha256sum awk sed grep tr date tee mkdir wc cp; do
-    command -v "$command" >/dev/null 2>&1 || missing+=("$command")
+    resolve_command "$command" || missing+=("$command")
   done
   if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
     missing+=("curl-or-wget")
