@@ -279,18 +279,28 @@ try_copy_or_download() {
 
 install_missing_deps() {
   local missing=("$@")
+  local unique=()
+  local seen=" "
+  local package
 
   [[ "${#missing[@]}" -gt 0 ]] || return 0
   [[ "$AUTO_INSTALL" == "1" ]] || fail "Missing required utilities: ${missing[*]}"
 
+  for package in "${missing[@]}"; do
+    if [[ "$seen" != *" $package "* ]]; then
+      unique+=("$package")
+      seen+="$package "
+    fi
+  done
+
   if command -v apt-get >/dev/null 2>&1; then
-    say "${YELLOW}Installing missing dependencies:${RESET} ${missing[*]}"
+    say "${YELLOW}Installing missing dependencies:${RESET} ${unique[*]}"
     apt-get update 2>&1 | tee -a "$LOG_FILE"
-    apt-get install -y "${missing[@]}" 2>&1 | tee -a "$LOG_FILE"
+    apt-get install -y "${unique[@]}" 2>&1 | tee -a "$LOG_FILE"
     return 0
   fi
 
-  fail "Missing required utilities: ${missing[*]}. Automatic install is available only on apt-based Linux."
+  fail "Missing required utilities: ${unique[*]}. Automatic install is available only on apt-based Linux."
 }
 
 require_commands() {
@@ -315,6 +325,15 @@ require_commands() {
   fi
 
   install_missing_deps "${missing[@]}"
+
+  missing=()
+  for command in flashrom sha256sum awk sed grep tr date tee mkdir wc cp; do
+    command -v "$command" >/dev/null 2>&1 || missing+=("$command")
+  done
+  if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
+    missing+=("curl-or-wget")
+  fi
+  [[ "${#missing[@]}" -eq 0 ]] || fail "Missing required utilities after dependency install: ${missing[*]}"
 }
 
 read_first_existing_file() {
@@ -529,6 +548,7 @@ show_info() {
 
 preflight_flashrom() {
   say "${BLUE}Checking flashrom access...${RESET}"
+  command -v flashrom >/dev/null 2>&1 || fail "flashrom is not installed or not in PATH."
   flashrom -p "$FLASHROM_PROGRAMMER" --flash-name 2>&1 | tee -a "$LOG_FILE" || \
     fail "flashrom cannot access the SPI flash with programmer '$FLASHROM_PROGRAMMER'."
 
